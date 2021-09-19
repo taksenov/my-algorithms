@@ -5,3 +5,6 @@ README-ORIG.md
 
 # macos file system
 .DS_Store
+
+# cmake
+cmake-build-debug/
