@@ -8,3 +8,7 @@ README-ORIG.md
 
 # cmake
 cmake-build-debug/
+CMakeLists.txt
+
+# Binary C++ files
+*.out
