@@ -15,6 +15,10 @@ https://www.mccme.ru/free-books/shen/shen-log.pdf
 
 Визуализация: https://www.cs.usfca.edu/~galles/visualization/
 
+Материалы по C++
+
+- https://man7.org/linux/man-pages/man1/gcc.1.html
+
 ## Какие ЯП можно использовать
 
 https://------.org/lesson/-------/step/-?unit=----
