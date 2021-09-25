@@ -31,7 +31,7 @@ const main = () => {
   const N = Number(inputNumber);
 
   let n = N;
-  let terms = [];
+  let terms = '';
   let count = 0;
 
   // CALCULATIONS
