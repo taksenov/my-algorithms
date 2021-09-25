@@ -61,13 +61,13 @@ const main = () => {
   // CALCULATIONS
   goodsArr = goodsArr.sort(([c1, w1], [c2, w2]) => c2 / w2 - c1 / w1);
   goodsArr.forEach((element) => {
-    const [c, w] = element;
-    const tmpCap = capacity;
-    const costPerUnit = c / w;
-
     if (capacity === 0) {
       return;
     }
+
+    const [c, w] = element;
+    const tmpCap = capacity;
+    const costPerUnit = c / w;
 
     if (w <= tmpCap) {
       maximumСost += c;
