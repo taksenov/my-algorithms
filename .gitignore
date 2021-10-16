@@ -3,6 +3,9 @@ README-ORIG.md
 .idea/
 .vscode/
 
+# node_modules
+node_modules/
+
 # macos file system
 .DS_Store
 
