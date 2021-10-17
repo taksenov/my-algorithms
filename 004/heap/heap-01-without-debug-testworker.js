@@ -40,8 +40,8 @@ const curry = (fn, ...par) => {
  * Корень
  *
  * @param {Array} arr массив с кучей
- * @return {Object} .idx индекс родителя
- *                  .elem элемент родителя
+ * @return {Object} .idx индекс корня
+ *                  .elem элемент корня
  */
 const root = (arr) => ({ idx: 0, elem: arr[0] });
 
@@ -49,8 +49,8 @@ const root = (arr) => ({ idx: 0, elem: arr[0] });
  * Последний в массиве
  *
  * @param {Array} arr массив с кучей
- * @return {Object} .idx индекс родителя
- *                  .elem элемент родителя
+ * @return {Object} .idx индекс последнего листа
+ *                  .elem элемент последнего листа
  */
 const last = (arr) => ({ idx: arr.length - 1, elem: arr[arr.length - 1] });
 
