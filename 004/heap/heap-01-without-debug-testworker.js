@@ -5,6 +5,24 @@ let commandsArr = [];
 // Куча
 let heap = [];
 
+// STDIN
+process.stdin.on('readable', () => {
+  let chunk;
+  while ((chunk = process.stdin.read()) !== null) {
+    inputString += chunk;
+  }
+});
+
+process.stdin.on('end', () => {
+  const arr = inputString.split('\n');
+  const countString = arr[0];
+  countNum = Number(countString);
+
+  commandsArr = [...arr.slice(1, countNum + 1).filter(Boolean)];
+
+  main();
+});
+
 /**
  * Каррирование
  *
@@ -189,28 +207,4 @@ const main = () => {
         break;
     }
   });
-
-  // EXIT
-  process.exit();
 };
-
-// RUNTIME ------
-// STDIN
-process.stdin.on('data', (data) => {
-  inputString += data;
-
-  const arr = inputString.split('\n');
-  const countString = arr[0];
-  countNum = Number(countString);
-
-  if (arr.length - 1 === countNum + 1) {
-    commandsArr = [...arr.slice(1, countNum + 1).filter(Boolean)];
-
-    main();
-  }
-});
-
-// ESCAPE
-process.on('SIGINT', () => {
-  process.exit();
-});

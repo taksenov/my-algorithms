@@ -1,8 +1,6 @@
 /**
 Heap
-
-NB: Пустая строка в конце обязательна.
-Особенности ввода мультистроковых данных через stdin
+MIN-heap and MAX-heap implementation
 
 Input data example:
 ```
@@ -44,26 +42,6 @@ let commandsArr = [];
 // Куча
 let heap = [];
 
-// STDIN
-process.stdin.on('data', (data) => {
-  inputString += data;
-
-  const arr = inputString.split('\n');
-  const countString = arr[0];
-  countNum = Number(countString);
-
-  if (arr.length - 1 === countNum + 1) {
-    commandsArr = [...arr.slice(1, countNum + 1).filter(Boolean)];
-
-    main();
-  }
-});
-
-// ESCAPE
-process.on('SIGINT', () => {
-  process.exit();
-});
-
 /**
  * Рассчет разницы во времени, между началом и окончанием операции
  *
@@ -72,15 +50,18 @@ process.on('SIGINT', () => {
  */
 const timeDiff = (begin, end) => (end - begin) / 1000000n;
 
+/**
+ * Каррирование
+ *
+ * @param {*} fn
+ * @param {*} par
+ * @return {*}
+ */
 const curry = (fn, ...par) => {
   const curried = (...args) =>
     fn.length > args.length ? curry(fn.bind(null, ...args)) : fn(...args);
   return par.length ? curried(...par) : curried;
 };
-
-const idxByNode = (arr, elem) => arr.indexOf(elem);
-
-const key = curry(idxByNode, heap);
 
 /**
  * Корень
@@ -109,20 +90,51 @@ const last = (arr) => ({ idx: arr.length - 1, elem: arr[arr.length - 1] });
  *                  .elem элемент родителя
  */
 const pred = (arr, idx) => {
-  const predIDX = Math.floor((idx - 1) / 2);
+  const predIDX = Math.trunc((idx - 1) / 2);
   return { idx: predIDX, elem: arr[predIDX] };
 };
 
+/**
+ * Обменивает между собой элементы массива
+ *
+ * @param {Array} arr массив с кучей
+ * @param {number} i индекс меняемго элемента (1)
+ * @param {number} j индекс меняемго элемента (2)
+ */
 const swap = (arr, i, j) => {
-  const idxI = key(i);
-  const idxJ = key(j);
-  const k = arr[idxI];
-  arr[idxI] = arr[idxJ];
-  arr[idxJ] = k;
+  const k = arr[i];
+  arr[i] = arr[j];
+  arr[j] = k;
 };
 
 /**
+ * Скомпенсировать индексы массива
+ * как будто массив начинается с 1, а не с 0
+ *
+ * @param {number} idx индекс массива
+ */
+const zeroIDXCompensation = (idx) => idx + 1;
+
+/**
+ * /////////////////////////////////////////////////////////////
+ *
+ * ███╗░░░███╗██╗███╗░░██╗  ██╗░░██╗███████╗░█████╗░██████╗░
+ * ████╗░████║██║████╗░██║  ██║░░██║██╔════╝██╔══██╗██╔══██╗
+ * ██╔████╔██║██║██╔██╗██║  ███████║█████╗░░███████║██████╔╝
+ * ██║╚██╔╝██║██║██║╚████║  ██╔══██║██╔══╝░░██╔══██║██╔═══╝░
+ * ██║░╚═╝░██║██║██║░╚███║  ██║░░██║███████╗██║░░██║██║░░░░░
+ * ╚═╝░░░░░╚═╝╚═╝╚═╝░░╚══╝  ╚═╝░░╚═╝╚══════╝╚═╝░░╚═╝╚═╝░░░░░
+ *
+ * /////////////////////////////////////////////////////////////
+ */
+
+/**
  * Просеивание вверх для MIN-кучи
+ *
+ * ```js
+ * // Вариант использования с каррированием
+ * const siftUpCurry = curry(siftUp, heap);
+ * ```
  *
  * @param {Array} arr массив с кучей
  * @param {number} idx индекс исследуемого элемента
@@ -133,22 +145,6 @@ const siftUp = (arr, idx) => {
     idx = pred(arr, idx).idx;
   }
 };
-// const siftUpCurry = curry(siftUp, heap);
-
-/**
- * Просеивание вверх для MAX-кучи
- *
- * @param {Array} arr массив с кучей
- * @param {number} idx индекс исследуемого элемента
- */
-const siftUpMax = (arr, idx) => {
-  while (idx > 0 && pred(arr, idx).elem < arr[idx]) {
-    swap(arr, arr[idx], pred(arr, idx).elem);
-    idx = pred(arr, idx).idx;
-  }
-};
-
-const zeroIDXCompensation = (idx) => idx + 1;
 
 /**
  * Поиск минимума из трех
@@ -189,6 +185,73 @@ const siftDown = (arr, idx) => {
 };
 
 /**
+ * Вставка узла в MIN-кучу
+ *
+ * @param {Array} arr массив с кучей
+ * @param {*} elem значение вставляемого элемента
+ */
+const insert = (arr, elem) => {
+  arr.push(elem);
+  siftUp(arr, last(arr).idx);
+};
+
+/**
+ * Удалить минимальный элемент из кучи
+ *
+ * @param {Array} arr массив с кучей
+ */
+const deleteMin = (arr) => {
+  swap(arr, root(arr).elem, last(arr).elem);
+  arr.pop();
+  siftDown(arr, root(arr).idx);
+};
+
+/**
+ * Получить минимальный элемент из кучи
+ *
+ * @param {Array} arr массив с кучей
+ */
+const getMin = (arr) => arr[0];
+
+/**
+ * Извлечь (с удалением) минимальный элемент из кучи
+ *
+ * @param {Array} arr массив с кучей
+ * @return {*} elem значение извлекаемого элемента
+ */
+const extractMin = (arr) => {
+  const max = getMin(arr);
+  deleteMin(arr);
+  return max;
+};
+
+/**
+ * /////////////////////////////////////////////////////////////
+ *
+ * ███╗░░░███╗░█████╗░██╗░░██╗  ██╗░░██╗███████╗░█████╗░██████╗░
+ * ████╗░████║██╔══██╗╚██╗██╔╝  ██║░░██║██╔════╝██╔══██╗██╔══██╗
+ * ██╔████╔██║███████║░╚███╔╝░  ███████║█████╗░░███████║██████╔╝
+ * ██║╚██╔╝██║██╔══██║░██╔██╗░  ██╔══██║██╔══╝░░██╔══██║██╔═══╝░
+ * ██║░╚═╝░██║██║░░██║██╔╝╚██╗  ██║░░██║███████╗██║░░██║██║░░░░░
+ * ╚═╝░░░░░╚═╝╚═╝░░╚═╝╚═╝░░╚═╝  ╚═╝░░╚═╝╚══════╝╚═╝░░╚═╝╚═╝░░░░░
+ *
+ * /////////////////////////////////////////////////////////////
+ */
+
+/**
+ * Просеивание вверх для MAX-кучи
+ *
+ * @param {Array} arr массив с кучей
+ * @param {number} idx индекс исследуемого элемента
+ */
+const siftUpMax = (arr, idx) => {
+  while (idx > 0 && pred(arr, idx).elem < arr[idx]) {
+    swap(arr, idx, pred(arr, idx).idx);
+    idx = pred(arr, idx).idx;
+  }
+};
+
+/**
  * Поиск максимума из трех
  *
  * @param {*} arr
@@ -216,25 +279,15 @@ const maxTriad = (arr, idx) => {
  * @param {number} idx индекс исследуемого элемента
  */
 const siftDownMax = (arr, idx) => {
-  while (2 * idx <= last(arr).idx) {
-    const j = maxTriad(arr, idx);
-    if (j === idx) {
+  let tmpIDX = idx;
+  while (2 * tmpIDX <= last(arr).idx) {
+    const j = maxTriad(arr, tmpIDX);
+    if (j === tmpIDX) {
       break;
     }
-    swap(arr, arr[idx], arr[j]);
-    idx = j;
+    swap(arr, tmpIDX, j);
+    tmpIDX = j;
   }
-};
-
-/**
- * Вставка узла в MIN-кучу
- *
- * @param {Array} arr массив с кучей
- * @param {*} elem значение вставляемого элемента
- */
-const insert = (arr, elem) => {
-  arr.push(elem);
-  siftUp(arr, last(arr).idx);
 };
 
 /**
@@ -248,36 +301,45 @@ const insertMax = (arr, elem) => {
   siftUpMax(arr, last(arr).idx);
 };
 
-// const insertCurry = curry(insert, heap);
-const insertCurry = curry(insertMax, heap);
-
-const deleteMin = (arr) => {
-  swap(arr, root(arr).elem, last(arr).elem);
-  arr.pop();
-  siftDown(arr, root(arr).idx);
-};
-
+/**
+ * Удалить максимальный элемент из кучи
+ *
+ * @param {Array} arr массив с кучей
+ */
 const deleteMax = (arr) => {
-  swap(arr, root(arr).elem, last(arr).elem);
+  swap(arr, root(arr).idx, last(arr).idx);
   arr.pop();
   siftDownMax(arr, root(arr).idx);
 };
 
-const getMin = (arr) => arr[0];
-
-const extractMin = (arr) => {
-  const max = getMin(arr);
-  deleteMin(arr);
-  return max;
-};
-
+/**
+ * Получить максимальный элемент из кучи
+ *
+ * @param {Array} arr массив с кучей
+ */
 const getMax = (arr) => arr[0];
 
+/**
+ * Извлечь (с удалением) максимальный элемент из кучи
+ *
+ * @param {Array} arr массив с кучей
+ * @return {*} elem значение извлекаемого элемента
+ */
 const extractMax = (arr) => {
   const max = getMax(arr);
   deleteMax(arr);
   return max;
 };
+
+/**
+ * Каррированный вариант функции insertMax
+ *
+ * ```js
+ * const insertCurry = curry(insert, heap);
+ * ```
+ *
+ */
+const insertCurry = curry(insertMax, heap);
 
 /**
  * Main!
@@ -304,8 +366,6 @@ const main = () => {
     }
   });
 
-  // OUTPUT
-
   // END TIME
   const end = process.hrtime.bigint();
 
@@ -316,3 +376,24 @@ const main = () => {
   // EXIT
   process.exit();
 };
+
+// RUNTIME ------
+// STDIN
+process.stdin.on('data', (data) => {
+  inputString += data;
+
+  const arr = inputString.split('\n');
+  const countString = arr[0];
+  countNum = Number(countString);
+
+  if (arr.length - 1 === countNum + 1) {
+    commandsArr = [...arr.slice(1, countNum + 1).filter(Boolean)];
+
+    main();
+  }
+});
+
+// ESCAPE
+process.on('SIGINT', () => {
+  process.exit();
+});
