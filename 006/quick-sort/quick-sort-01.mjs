@@ -174,10 +174,6 @@ const binarySearchForSegments = (arr, key, isEnds = false) => {
 
   // NB: Начала отрезков
   if (!isEnds) {
-    if (Math.abs(right) - Math.abs(left) > 1) {
-      res = right;
-      return res;
-    }
     return right;
   }
 
