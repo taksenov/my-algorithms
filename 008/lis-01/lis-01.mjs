@@ -2,7 +2,7 @@
  * Count Sort
  *
  * ```
- * node --max-old-space-size=256 ./008/longest-increasing-subsequence/lis-01.mjs < ./008/longest-increasing-subsequence/test-data-01.txt
+ * node --max-old-space-size=256 ./008/lis-01/lis-01.mjs < ./008/lis-01/test-data.txt
  * ```
  * IDEA: For O(n*logn) see https://cp-algorithms.com/sequences/longest_increasing_subsequence.html#toc-tgt-9
  */
