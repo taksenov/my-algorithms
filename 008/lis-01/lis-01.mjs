@@ -35,7 +35,7 @@ const withoutDivRemainderCondition = (prev, current) => current % prev === 0;
 /**
  * Возвращает длину наибольшей подпоследовательности по условию
  *
- * @param {Arrray} arr Массив данных.
+ * @param {Array} arr Массив данных.
  * @param {Func} condition Условие.
  * @return {number} Искомая длина.
  */
